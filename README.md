@@ -67,6 +67,14 @@ Talent-Lens/
 
 This repo includes a GitHub Actions workflow for Pages deployment. After pushing to `main`, enable GitHub Pages with **Build and deployment -> GitHub Actions**.
 
+Live tool routes:
+- `/apps/mandate-intake.html`
+- `/apps/candidate-assessment.html`
+- `/apps/comparison.html`
+- `/apps/recruitment-tracker.html`
+
+The AI-powered tools run fully in the browser on GitHub Pages, so users need to provide their own Anthropic API key locally in the page header.
+
 ## License
 
 MIT License

@@ -1,5 +1,5 @@
-import { useState, useCallback } from "react";
-import * as mammoth from "mammoth";
+const { useState, useCallback } = React;
+const mammoth = window.mammoth;
 
 const MODEL = "claude-sonnet-4-20250514";
 
@@ -58,7 +58,7 @@ function buildContent(jdData, cvData, notes) {
 async function assessCandidate(jdData, cvData, notes) {
   const resp = await fetch("https://api.anthropic.com/v1/messages", {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: window.TalentLensRuntime.getAnthropicHeaders(),
     body: JSON.stringify({ model: MODEL, max_tokens: 8000, messages: [{ role: "user", content: buildContent(jdData, cvData, notes) }] })
   });
   const data = await resp.json();
@@ -370,7 +370,7 @@ function DetailModal({ r, onClose }) {
 }
 
 // ── Main App ──────────────────────────────────────────────────────────────
-export default function App() {
+function App() {
   const [view, setView] = useState("setup"); // setup | compare
   const [inputMode, setInputMode] = useState("file");
   const [jdFile, setJdFile] = useState(null);
@@ -557,3 +557,5 @@ export default function App() {
     </div>
   );
 }
+
+window.TalentLensApp = App;

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Multi-Candidate Comparison | Talent-Lens</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500;700&family=DM+Sans:wght@400;500;700&family=Fraunces:opsz,wght@9..144,700;9..144,800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../assets/tool-shell.css" />
+</head>
+<body>
+  <div class="tl-shell">
+    <div class="tl-topbar">
+      <a class="tl-brand" href="../index.html">
+        <div class="tl-brand-mark">TL</div>
+        <div class="tl-brand-copy"><strong>Talent-Lens</strong><span>Multi-Candidate Comparison</span></div>
+      </a>
+      <nav class="tl-nav">
+        <a href="../index.html">Home</a>
+        <a href="./mandate-intake.html">Mandate Intake</a>
+        <a href="./candidate-assessment.html">Assessment</a>
+        <a href="./recruitment-tracker.html">Tracker</a>
+      </nav>
+    </div>
+    <div id="api-key-panel"></div>
+    <div id="app"></div>
+  </div>
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="https://unpkg.com/mammoth@1.9.1/mammoth.browser.min.js"></script>
+  <script src="../assets/tool-runtime.js"></script>
+  <script type="text/babel" data-presets="react" src="../tools/talent-lens.jsx"></script>
+  <script>
+    window.TalentLensRuntime.renderApiKeyControls();
+    window.TalentLensRuntime.bootApp();
+  </script>
+</body>
+</html>

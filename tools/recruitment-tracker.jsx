@@ -1,6 +1,6 @@
-import { useState, useMemo, useRef } from "react";
-import * as XLSX from "xlsx";
-import * as mammoth from "mammoth";
+const { useState, useMemo, useRef } = React;
+const XLSX = window.XLSX;
+const mammoth = window.mammoth;
 
 const MODEL = "claude-sonnet-4-20250514";
 
@@ -74,7 +74,7 @@ async function aiExtractFromCV(cvData) {
 
   const resp = await fetch("https://api.anthropic.com/v1/messages", {
     method:"POST",
-    headers:{ "Content-Type":"application/json" },
+    headers: window.TalentLensRuntime.getAnthropicHeaders(),
     body: JSON.stringify({ model: MODEL, max_tokens:600, messages:[{ role:"user", content }] })
   });
   const data = await resp.json();
@@ -330,7 +330,7 @@ function exportToExcel(data) {
 }
 
 // ── Main App ──────────────────────────────────────────────────────────────
-export default function App() {
+function App() {
   const [candidates, setCandidates]   = useState([]);
   const [modal, setModal]             = useState(null);
   const [previewCand, setPreviewCand] = useState(null);
@@ -528,3 +528,5 @@ export default function App() {
     </div>
   );
 }
+
+window.TalentLensApp = App;

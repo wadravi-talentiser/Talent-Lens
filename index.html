@@ -396,6 +396,36 @@
       font-weight: 700;
     }
 
+    .tool-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 18px;
+    }
+
+    .tool-link {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 42px;
+      padding: 0 14px;
+      border-radius: 12px;
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .tool-link-primary {
+      color: #041019;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+    }
+
+    .tool-link-secondary {
+      color: var(--text);
+      border: 1px solid var(--border);
+      background: rgba(255, 255, 255, 0.03);
+    }
+
     .section-card {
       padding: 28px;
     }
@@ -636,6 +666,9 @@
             <li>Boolean strings plus sourcing keywords</li>
             <li>Candidate persona, red flags, and call prompts</li>
           </ul>
+          <div class="tool-actions">
+            <a class="tool-link tool-link-primary" href="./apps/mandate-intake.html">Open tool</a>
+          </div>
         </article>
 
         <article class="tool-card">
@@ -654,6 +687,9 @@
             <li>Interview question generation</li>
             <li>Compensation and notice-period guidance</li>
           </ul>
+          <div class="tool-actions">
+            <a class="tool-link tool-link-primary" href="./apps/candidate-assessment.html">Open tool</a>
+          </div>
         </article>
 
         <article class="tool-card">
@@ -672,6 +708,9 @@
             <li>Detailed report view per candidate</li>
             <li>Clear shortlist signal for recruiters</li>
           </ul>
+          <div class="tool-actions">
+            <a class="tool-link tool-link-primary" href="./apps/comparison.html">Open tool</a>
+          </div>
         </article>
 
         <article class="tool-card">
@@ -690,6 +729,9 @@
             <li>Table and card views</li>
             <li>Excel export for reporting and handoff</li>
           </ul>
+          <div class="tool-actions">
+            <a class="tool-link tool-link-primary" href="./apps/recruitment-tracker.html">Open tool</a>
+          </div>
         </article>
       </div>
     </section>

@@ -1,4 +1,4 @@
-import { useState } from "react";
+const { useState } = React;
 
 const MODEL = "claude-sonnet-4-20250514";
 
@@ -69,7 +69,7 @@ Return this exact JSON structure:
 
   const resp = await fetch("https://api.anthropic.com/v1/messages", {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: window.TalentLensRuntime.getAnthropicHeaders(),
     body: JSON.stringify({
       model: MODEL,
       max_tokens: 8000,
@@ -142,7 +142,7 @@ function CopyBtn({ text, label = "Copy" }) {
 }
 
 // ── Main ──────────────────────────────────────────────────────────────────
-export default function App() {
+function App() {
   const [brief, setBrief] = useState("");
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(null);
@@ -448,3 +448,5 @@ export default function App() {
     </div>
   );
 }
+
+window.TalentLensApp = App;
