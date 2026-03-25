@@ -3,443 +3,777 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Talent-Lens — AI Recruitment Suite</title>
-  <meta name="description" content="AI-powered recruitment automation for agencies. Parse mandates, assess candidates, compare shortlists, track pipeline." />
-  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;600&family=DM+Sans:wght@300;400;500;600;700&family=Fraunces:ital,wght@0,700;0,800;1,400&display=swap" rel="stylesheet" />
+  <title>Talent-Lens | AI Recruitment Suite</title>
+  <meta
+    name="description"
+    content="Talent-Lens is an AI-powered recruitment toolkit for mandate intake, candidate assessment, shortlist comparison, and pipeline tracking."
+  />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500;700&family=DM+Sans:wght@400;500;700&family=Fraunces:opsz,wght@9..144,700;9..144,800&display=swap"
+    rel="stylesheet"
+  />
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    * { box-sizing: border-box; }
 
     :root {
-      --bg: #080d18;
-      --surface: #0f1623;
-      --card: #131d2e;
-      --border: #1c2840;
-      --accent: #00e5a0;
-      --accent2: #f0a500;
-      --blue: #4a9eff;
-      --red: #ff5c5c;
-      --yellow: #f5c842;
-      --text: #e2e8f0;
-      --muted: #8892a4;
-      --dim: #4a5568;
+      --bg: #08111f;
+      --surface: #0f1728;
+      --card: rgba(18, 27, 46, 0.92);
+      --border: rgba(115, 142, 191, 0.18);
+      --text: #ebf1ff;
+      --muted: #9aa8c7;
+      --accent: #00d1a0;
+      --accent-2: #5aa8ff;
+      --accent-3: #ffbf47;
+      --shadow: 0 24px 80px rgba(0, 0, 0, 0.35);
     }
+
+    html { scroll-behavior: smooth; }
 
     body {
-      background: var(--bg);
-      color: var(--text);
-      font-family: 'DM Sans', sans-serif;
+      margin: 0;
       min-height: 100vh;
-      overflow-x: hidden;
+      color: var(--text);
+      font-family: "DM Sans", sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(90, 168, 255, 0.2), transparent 32%),
+        radial-gradient(circle at top right, rgba(0, 209, 160, 0.16), transparent 30%),
+        linear-gradient(180deg, #08111f 0%, #091423 42%, #08111f 100%);
     }
 
-    /* ── NAV ── */
-    nav {
-      position: sticky; top: 0; z-index: 100;
-      background: rgba(8,13,24,0.95);
-      backdrop-filter: blur(12px);
-      border-bottom: 1px solid var(--border);
-      padding: 0 32px;
-      display: flex; align-items: center; gap: 16px; height: 60px;
-    }
-    .nav-logo {
-      display: flex; align-items: center; gap: 10px; text-decoration: none;
-    }
-    .nav-logo-icon {
-      width: 32px; height: 32px; border-radius: 9px;
-      background: linear-gradient(135deg, #00e5a0, #0077ff);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 15px;
-    }
-    .nav-logo-text {
-      font-family: 'Fraunces', serif;
-      font-size: 16px; font-weight: 700; color: var(--text);
-    }
-    .nav-links { margin-left: auto; display: flex; gap: 6px; }
-    .nav-link {
-      padding: 7px 16px; border-radius: 8px; font-size: 12px; font-weight: 600;
-      color: var(--muted); text-decoration: none; border: 1px solid transparent;
-      transition: all 0.2s;
-    }
-    .nav-link:hover { color: var(--text); background: var(--surface); }
-    .nav-cta {
-      padding: 8px 18px; border-radius: 8px; font-size: 12px; font-weight: 700;
-      background: var(--accent); color: #080d18; text-decoration: none;
-      transition: opacity 0.2s;
-    }
-    .nav-cta:hover { opacity: 0.88; }
+    a { color: inherit; }
 
-    /* ── HERO ── */
-    .hero {
-      max-width: 900px; margin: 0 auto;
-      padding: 90px 24px 60px;
-      text-align: center;
+    .shell {
+      width: min(1160px, calc(100% - 32px));
+      margin: 0 auto;
     }
-    .hero-badge {
-      display: inline-flex; align-items: center; gap: 7px;
-      background: rgba(0,229,160,0.1); border: 1px solid rgba(0,229,160,0.3);
-      border-radius: 20px; padding: 5px 14px;
-      font-size: 11px; font-weight: 700; color: var(--accent);
-      font-family: 'DM Mono', monospace; letter-spacing: 0.5px;
-      margin-bottom: 28px;
-    }
-    .hero h1 {
-      font-family: 'Fraunces', serif;
-      font-size: clamp(36px, 6vw, 64px);
-      font-weight: 800; line-height: 1.1;
-      letter-spacing: -1px;
-      margin-bottom: 22px;
-    }
-    .hero h1 span { color: var(--accent); }
-    .hero p {
-      font-size: 17px; color: var(--muted); line-height: 1.7;
-      max-width: 600px; margin: 0 auto 36px;
-    }
-    .hero-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
-    .btn-primary {
-      padding: 14px 32px; border-radius: 12px; border: none;
-      background: linear-gradient(135deg, #00e5a0, #0077ff);
-      color: #080d18; font-size: 14px; font-weight: 800;
-      text-decoration: none; cursor: pointer; transition: opacity 0.2s;
-      display: inline-flex; align-items: center; gap: 8px;
-    }
-    .btn-primary:hover { opacity: 0.88; }
-    .btn-secondary {
-      padding: 14px 28px; border-radius: 12px;
-      border: 1px solid var(--border); background: transparent;
-      color: var(--muted); font-size: 14px; font-weight: 600;
-      text-decoration: none; transition: all 0.2s;
-      display: inline-flex; align-items: center; gap: 8px;
-    }
-    .btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
 
-    /* ── STATS ── */
-    .stats {
-      display: flex; justify-content: center; gap: 48px;
-      padding: 40px 24px; flex-wrap: wrap;
-      border-top: 1px solid var(--border);
-      border-bottom: 1px solid var(--border);
-      margin: 0 24px;
+    .nav {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      backdrop-filter: blur(14px);
+      background: rgba(8, 17, 31, 0.72);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
     }
-    .stat-item { text-align: center; }
-    .stat-number {
-      font-family: 'DM Mono', monospace;
-      font-size: 32px; font-weight: 700; color: var(--accent);
-    }
-    .stat-label { font-size: 12px; color: var(--dim); margin-top: 4px; }
 
-    /* ── TOOLS GRID ── */
-    .section { max-width: 1060px; margin: 0 auto; padding: 70px 24px; }
-    .section-label {
-      font-size: 11px; font-weight: 800; color: var(--accent);
-      letter-spacing: 2px; text-transform: uppercase;
-      font-family: 'DM Mono', monospace; margin-bottom: 12px;
+    .nav-inner {
+      width: min(1160px, calc(100% - 32px));
+      height: 72px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
     }
-    .section-title {
-      font-family: 'Fraunces', serif;
-      font-size: clamp(26px, 4vw, 38px); font-weight: 700;
-      margin-bottom: 10px; letter-spacing: -0.5px;
-    }
-    .section-sub { color: var(--muted); font-size: 15px; margin-bottom: 48px; line-height: 1.6; }
 
-    .tools-grid {
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      font-weight: 700;
+    }
+
+    .brand-mark {
+      width: 40px;
+      height: 40px;
+      border-radius: 14px;
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(460px, 1fr));
-      gap: 20px;
+      place-items: center;
+      font-family: "DM Mono", monospace;
+      font-size: 14px;
+      color: #041019;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      box-shadow: 0 12px 28px rgba(0, 209, 160, 0.28);
     }
 
+    .brand-copy {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .brand-copy strong {
+      font-size: 15px;
+      letter-spacing: 0.02em;
+    }
+
+    .brand-copy span {
+      font-size: 11px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .nav-links a {
+      text-decoration: none;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 600;
+      padding: 10px 14px;
+      border-radius: 999px;
+    }
+
+    .nav-links a:hover { color: var(--text); background: rgba(255, 255, 255, 0.04); }
+
+    .hero {
+      padding: 96px 0 56px;
+    }
+
+    .hero-panel {
+      display: grid;
+      grid-template-columns: 1.3fr 0.9fr;
+      gap: 28px;
+      align-items: stretch;
+    }
+
+    .hero-copy,
+    .hero-card,
+    .section-card,
     .tool-card {
       background: var(--card);
       border: 1px solid var(--border);
-      border-radius: 18px;
+      border-radius: 28px;
+      box-shadow: var(--shadow);
+    }
+
+    .hero-copy {
+      padding: 42px;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 14px;
+      border-radius: 999px;
+      background: rgba(0, 209, 160, 0.1);
+      border: 1px solid rgba(0, 209, 160, 0.24);
+      color: var(--accent);
+      font-family: "DM Mono", monospace;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    h1, h2 {
+      margin: 0;
+      font-family: "Fraunces", serif;
+      letter-spacing: -0.03em;
+    }
+
+    h1 {
+      margin-top: 22px;
+      font-size: clamp(40px, 6vw, 68px);
+      line-height: 1.02;
+    }
+
+    .hero-copy p {
+      margin: 18px 0 0;
+      max-width: 62ch;
+      color: var(--muted);
+      font-size: 17px;
+      line-height: 1.75;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+      margin-top: 30px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      min-height: 48px;
+      padding: 0 20px;
+      border-radius: 14px;
+      font-weight: 700;
+      text-decoration: none;
+      transition: transform 0.18s ease, opacity 0.18s ease, border-color 0.18s ease;
+    }
+
+    .btn:hover { transform: translateY(-1px); }
+
+    .btn-primary {
+      color: #041019;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+    }
+
+    .btn-secondary {
+      color: var(--text);
+      border: 1px solid var(--border);
+      background: rgba(255, 255, 255, 0.03);
+    }
+
+    .hero-card {
       padding: 28px;
-      transition: border-color 0.2s, transform 0.2s;
-      position: relative; overflow: hidden;
-    }
-    .tool-card:hover { border-color: #2a4060; transform: translateY(-2px); }
-    .tool-card.featured { border-color: rgba(0,229,160,0.3); }
-
-    .tool-icon {
-      width: 48px; height: 48px; border-radius: 14px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 22px; margin-bottom: 18px;
-    }
-    .tool-card h3 {
-      font-family: 'Fraunces', serif;
-      font-size: 20px; font-weight: 700; margin-bottom: 8px;
-    }
-    .tool-card p { font-size: 13px; color: var(--muted); line-height: 1.6; margin-bottom: 18px; }
-
-    .feature-list { list-style: none; margin-bottom: 22px; }
-    .feature-list li {
-      font-size: 12px; color: var(--muted);
-      padding: 5px 0; border-bottom: 1px solid var(--border);
-      display: flex; align-items: center; gap: 8px;
-    }
-    .feature-list li:last-child { border-bottom: none; }
-    .feature-list li::before {
-      content: '→'; color: var(--accent); font-weight: 700; flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 18px;
     }
 
-    .tool-tag {
-      display: inline-block;
-      background: rgba(0,229,160,0.1); color: var(--accent);
-      border: 1px solid rgba(0,229,160,0.25);
-      border-radius: 20px; padding: 3px 10px;
-      font-size: 10px; font-weight: 700;
-      font-family: 'DM Mono', monospace;
-    }
-
-    /* ── HOW IT WORKS ── */
-    .how-section {
-      background: var(--surface);
-      border-top: 1px solid var(--border);
-      border-bottom: 1px solid var(--border);
-    }
-    .steps-grid {
+    .metric-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 0;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
     }
-    .step {
-      padding: 36px 28px;
-      border-right: 1px solid var(--border);
+
+    .metric {
+      padding: 18px;
+      border-radius: 20px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .metric strong {
+      display: block;
+      font-family: "DM Mono", monospace;
+      font-size: 22px;
+      color: var(--accent);
+    }
+
+    .metric span {
+      display: block;
+      margin-top: 6px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    .publish-note {
+      padding: 18px;
+      border-radius: 20px;
+      background: linear-gradient(135deg, rgba(255, 191, 71, 0.12), rgba(90, 168, 255, 0.08));
+      border: 1px solid rgba(255, 191, 71, 0.2);
+    }
+
+    .publish-note strong {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 14px;
+    }
+
+    .publish-note p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.65;
+    }
+
+    section {
+      padding: 28px 0;
+    }
+
+    .section-head {
+      margin-bottom: 22px;
+    }
+
+    .section-head span {
+      display: block;
+      margin-bottom: 10px;
+      color: var(--accent);
+      font-family: "DM Mono", monospace;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    .section-head p {
+      margin: 10px 0 0;
+      color: var(--muted);
+      max-width: 64ch;
+      line-height: 1.7;
+    }
+
+    .tools-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .tool-card {
+      padding: 28px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .tool-card::after {
+      content: "";
+      position: absolute;
+      inset: auto -20% -40% auto;
+      width: 180px;
+      height: 180px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(90, 168, 255, 0.16), transparent 62%);
+      pointer-events: none;
+    }
+
+    .tool-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .tool-pill {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 44px;
+      min-height: 44px;
+      padding: 0 12px;
+      border-radius: 14px;
+      background: rgba(0, 209, 160, 0.12);
+      color: var(--accent);
+      font-family: "DM Mono", monospace;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .tag {
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .tool-card h3 {
+      margin: 0;
+      font-size: 22px;
+      font-family: "Fraunces", serif;
+    }
+
+    .tool-card p {
+      margin: 12px 0 18px;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.7;
+    }
+
+    .tool-card ul {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      display: grid;
+      gap: 10px;
+    }
+
+    .tool-card li {
+      color: #c9d4ee;
+      font-size: 13px;
+      line-height: 1.55;
+      padding-left: 18px;
       position: relative;
     }
-    .step:last-child { border-right: none; }
-    .step-num {
-      font-family: 'DM Mono', monospace;
-      font-size: 11px; font-weight: 700; color: var(--accent);
-      letter-spacing: 1px; margin-bottom: 14px;
-    }
-    .step h4 { font-size: 15px; font-weight: 700; margin-bottom: 8px; }
-    .step p { font-size: 12px; color: var(--muted); line-height: 1.6; }
 
-    /* ── ABOUT ── */
-    .about-card {
-      background: var(--card);
-      border: 1px solid rgba(0,229,160,0.2);
-      border-radius: 20px; padding: 48px;
-      display: grid; grid-template-columns: 1fr 1fr; gap: 48px;
-      align-items: center;
+    .tool-card li::before {
+      content: "+";
+      position: absolute;
+      left: 0;
+      color: var(--accent-3);
+      font-weight: 700;
     }
-    .about-card h2 {
-      font-family: 'Fraunces', serif;
-      font-size: 30px; font-weight: 700;
-      margin-bottom: 16px; letter-spacing: -0.5px;
-    }
-    .about-card p { color: var(--muted); font-size: 14px; line-height: 1.8; margin-bottom: 14px; }
-    .about-meta { display: flex; flex-direction: column; gap: 14px; }
-    .about-meta-item {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 12px; padding: 16px 20px;
-    }
-    .about-meta-label { font-size: 10px; color: var(--dim); font-weight: 700; letter-spacing: 1px; margin-bottom: 5px; }
-    .about-meta-value { font-size: 14px; font-weight: 600; color: var(--text); }
 
-    /* ── FOOTER ── */
+    .section-card {
+      padding: 28px;
+    }
+
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .step {
+      padding: 18px;
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .step strong {
+      display: inline-block;
+      margin-bottom: 10px;
+      color: var(--accent);
+      font-family: "DM Mono", monospace;
+      font-size: 11px;
+      letter-spacing: 0.08em;
+    }
+
+    .step h3 {
+      margin: 0 0 10px;
+      font-size: 16px;
+    }
+
+    .step p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.65;
+    }
+
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 18px;
+    }
+
+    .about-copy p,
+    .meta-list p {
+      color: var(--muted);
+      line-height: 1.75;
+      margin: 12px 0 0;
+    }
+
+    .meta-list {
+      display: grid;
+      gap: 12px;
+    }
+
+    .meta-item {
+      padding: 18px;
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .meta-item span {
+      display: block;
+      margin-bottom: 6px;
+      color: var(--muted);
+      font-family: "DM Mono", monospace;
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .meta-item strong,
+    .meta-item a {
+      font-size: 15px;
+      color: var(--text);
+      text-decoration: none;
+      word-break: break-word;
+    }
+
+    .meta-item a:hover { color: var(--accent); }
+
     footer {
-      border-top: 1px solid var(--border);
-      padding: 32px;
-      display: flex; justify-content: space-between; align-items: center;
-      flex-wrap: wrap; gap: 16px;
-      font-size: 12px; color: var(--dim);
+      padding: 36px 0 48px;
+      color: var(--muted);
+      font-size: 13px;
     }
-    footer a { color: var(--muted); text-decoration: none; }
-    footer a:hover { color: var(--accent); }
 
-    @media (max-width: 700px) {
-      .tools-grid { grid-template-columns: 1fr; }
-      .about-card { grid-template-columns: 1fr; padding: 28px; }
-      .steps-grid { grid-template-columns: 1fr 1fr; }
-      .step { border-right: none; border-bottom: 1px solid var(--border); }
-      nav { padding: 0 16px; }
-      .nav-links { display: none; }
+    .footer-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+      padding-top: 20px;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .footer-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .footer-links a {
+      color: var(--muted);
+      text-decoration: none;
+    }
+
+    .footer-links a:hover { color: var(--text); }
+
+    @media (max-width: 960px) {
+      .hero-panel,
+      .about-grid,
+      .tools-grid,
+      .steps {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 680px) {
+      .nav-inner {
+        height: auto;
+        padding: 14px 0;
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .hero {
+        padding-top: 64px;
+      }
+
+      .hero-copy,
+      .hero-card,
+      .tool-card,
+      .section-card {
+        padding: 22px;
+        border-radius: 22px;
+      }
+
+      .metric-grid {
+        grid-template-columns: 1fr;
+      }
     }
   </style>
 </head>
 <body>
-
-<!-- NAV -->
-<nav>
-  <a class="nav-logo" href="#">
-    <div class="nav-logo-icon">⚡</div>
-    <span class="nav-logo-text">Talent-Lens</span>
-  </a>
-  <div class="nav-links">
-    <a class="nav-link" href="#tools">Tools</a>
-    <a class="nav-link" href="#how">How it works</a>
-    <a class="nav-link" href="#about">About</a>
-    <a class="nav-cta" href="https://github.com/wadravi-talentiser/Talent-Lens" target="_blank">GitHub →</a>
-  </div>
-</nav>
-
-<!-- HERO -->
-<section class="hero">
-  <div class="hero-badge">⚡ AI-Powered Recruitment Automation</div>
-  <h1>Recruit smarter.<br /><span>Not harder.</span></h1>
-  <p>A complete AI toolkit for recruitment agencies. Parse client mandates, assess candidates, compare shortlists — all powered by Claude AI.</p>
-  <div class="hero-actions">
-    <a class="btn-primary" href="#tools">Explore Tools ↓</a>
-    <a class="btn-secondary" href="https://github.com/wadravi-talentiser/Talent-Lens" target="_blank">⭐ Star on GitHub</a>
-  </div>
-</section>
-
-<!-- STATS -->
-<div class="stats">
-  <div class="stat-item">
-    <div class="stat-number">4</div>
-    <div class="stat-label">AI-Powered Tools</div>
-  </div>
-  <div class="stat-item">
-    <div class="stat-number">~30s</div>
-    <div class="stat-label">Brief to JD Time</div>
-  </div>
-  <div class="stat-item">
-    <div class="stat-number">100%</div>
-    <div class="stat-label">Free to Use</div>
-  </div>
-  <div class="stat-item">
-    <div class="stat-number">PDF/DOCX/TXT</div>
-    <div class="stat-label">File Support</div>
-  </div>
-</div>
-
-<!-- TOOLS -->
-<section class="section" id="tools">
-  <div class="section-label">The Suite</div>
-  <div class="section-title">Every tool your agency needs</div>
-  <div class="section-sub">Built by a recruiter, for recruiters. Each tool automates a step in your daily workflow.</div>
-
-  <div class="tools-grid">
-
-    <div class="tool-card featured">
-      <div class="tool-icon" style="background: rgba(240,165,0,0.12);">📋</div>
-      <span class="tool-tag">Most Used</span>
-      <h3>Client Mandate Intake</h3>
-      <p>Paste any raw brief — email, WhatsApp, call notes — and get a fully structured JD with sourcing keywords in seconds.</p>
-      <ul class="feature-list">
-        <li>Structured JD (200-250 words, ready to post)</li>
-        <li>Boolean search string for LinkedIn & Naukri</li>
-        <li>Must-have vs good-to-have skills split</li>
-        <li>Target companies & candidate persona</li>
-        <li>Ready-made candidate call script</li>
-      </ul>
-    </div>
-
-    <div class="tool-card">
-      <div class="tool-icon" style="background: rgba(0,229,160,0.1);">⚡</div>
-      <h3>AI Candidate Assessment</h3>
-      <p>Upload a JD and CV and get a full fit scorecard with dimensions, strengths, gaps, and tailored interview questions.</p>
-      <ul class="feature-list">
-        <li>Overall fit score 0–100 with visual ring</li>
-        <li>5-dimension skill breakdown with bars</li>
-        <li>Strengths, gaps & red flags</li>
-        <li>5 AI-generated interview questions</li>
-        <li>Salary estimate & notice period</li>
-      </ul>
-    </div>
-
-    <div class="tool-card">
-      <div class="tool-icon" style="background: rgba(74,158,255,0.1);">👥</div>
-      <h3>Multi-Candidate Comparison</h3>
-      <p>Set one JD, assess multiple candidates and rank them on a live leaderboard. Know instantly who to shortlist.</p>
-      <ul class="feature-list">
-        <li>Live leaderboard ranked by AI fit score</li>
-        <li>Side-by-side table view</li>
-        <li>🥇🥈🥉 medals for top candidates</li>
-        <li>Full report modal per candidate</li>
-        <li>Score distribution chart</li>
-      </ul>
-    </div>
-
-    <div class="tool-card">
-      <div class="tool-icon" style="background: rgba(62,207,142,0.1);">📊</div>
-      <h3>Recruitment Tracker</h3>
-      <p>Replace your Excel sheet with a smart candidate pipeline tracker. All your standard columns, smarter filters, one-click export.</p>
-      <ul class="feature-list">
-        <li>All standard columns (S.No, Date, Source, etc.)</li>
-        <li>Status pipeline: New → Placed</li>
-        <li>Search, filter by status & source</li>
-        <li>Table & card views</li>
-        <li>One-click Excel export (.xlsx)</li>
-      </ul>
-    </div>
-
-  </div>
-</section>
-
-<!-- HOW IT WORKS -->
-<section class="how-section" id="how">
-  <div class="section" style="padding-bottom: 0;">
-    <div class="section-label">Workflow</div>
-    <div class="section-title">How it works</div>
-    <div class="section-sub">Four steps. Zero manual work.</div>
-  </div>
-  <div class="steps-grid">
-    <div class="step">
-      <div class="step-num">STEP 01</div>
-      <h4>Paste the brief</h4>
-      <p>Copy any raw client message — email, WhatsApp, notes — directly into the Mandate Intake tool.</p>
-    </div>
-    <div class="step">
-      <div class="step-num">STEP 02</div>
-      <h4>Get structured JD</h4>
-      <p>AI parses the brief and generates a full JD, boolean string, and sourcing keywords instantly.</p>
-    </div>
-    <div class="step">
-      <div class="step-num">STEP 03</div>
-      <h4>Assess candidates</h4>
-      <p>Upload CVs against the JD. Get scored, ranked reports with interview questions in seconds.</p>
-    </div>
-    <div class="step">
-      <div class="step-num">STEP 04</div>
-      <h4>Track & submit</h4>
-      <p>Add shortlisted candidates to the tracker, update status, and export to Excel for client submission.</p>
-    </div>
-  </div>
-</section>
-
-<!-- ABOUT -->
-<section class="section" id="about">
-  <div class="about-card">
-    <div>
-      <div class="section-label" style="margin-bottom: 12px;">About</div>
-      <h2>Built by a recruiter,<br />for recruiters.</h2>
-      <p>Talent-Lens was built by <strong>Wadravi Talentiser</strong> — a recruitment agency that got tired of spending hours on mandate intake, CV screening, and pipeline tracking.</p>
-      <p>Every tool in this suite automates a real step in the daily recruitment workflow. No bloat, no subscriptions — just practical AI that saves hours every day.</p>
-      <p>Built with Claude AI (Anthropic), React, and a lot of frustration with manual processes.</p>
-    </div>
-    <div class="about-meta">
-      <div class="about-meta-item">
-        <div class="about-meta-label">BUILT BY</div>
-        <div class="about-meta-value">Wadravi Talentiser</div>
-      </div>
-      <div class="about-meta-item">
-        <div class="about-meta-label">AI ENGINE</div>
-        <div class="about-meta-value">Anthropic Claude Sonnet 4</div>
-      </div>
-      <div class="about-meta-item">
-        <div class="about-meta-label">OPEN SOURCE</div>
-        <div class="about-meta-value">MIT License · Free forever</div>
-      </div>
-      <div class="about-meta-item">
-        <div class="about-meta-label">GITHUB</div>
-        <div class="about-meta-value"><a href="https://github.com/wadravi-talentiser/Talent-Lens" style="color: #00e5a0;">wadravi-talentiser/Talent-Lens</a></div>
+  <nav class="nav">
+    <div class="nav-inner">
+      <a class="brand" href="#top">
+        <div class="brand-mark">TL</div>
+        <div class="brand-copy">
+          <strong>Talent-Lens</strong>
+          <span>AI Recruitment Suite</span>
+        </div>
+      </a>
+      <div class="nav-links">
+        <a href="#tools">Tools</a>
+        <a href="#workflow">Workflow</a>
+        <a href="#about">About</a>
+        <a href="https://github.com/wadravi-talentiser/Talent-Lens" target="_blank" rel="noreferrer">GitHub</a>
       </div>
     </div>
-  </div>
-</section>
+  </nav>
 
-<!-- FOOTER -->
-<footer>
-  <div>⚡ <strong>Talent-Lens</strong> — AI Recruitment Suite by Wadravi Talentiser</div>
-  <div style="display: flex; gap: 20px;">
-    <a href="https://github.com/wadravi-talentiser/Talent-Lens">GitHub</a>
-    <a href="https://github.com/wadravi-talentiser/Talent-Lens/issues">Report Issue</a>
-    <a href="#about">About</a>
-  </div>
-</footer>
+  <main id="top" class="shell">
+    <section class="hero">
+      <div class="hero-panel">
+        <div class="hero-copy">
+          <div class="eyebrow">Recruitment automation for fast-moving teams</div>
+          <h1>Screen faster. Shortlist smarter. Track every candidate.</h1>
+          <p>
+            Talent-Lens brings mandate intake, candidate assessment, shortlist comparison,
+            and pipeline tracking into one clean recruitment workspace built for agencies
+            and independent recruiters.
+          </p>
+          <div class="hero-actions">
+            <a class="btn btn-primary" href="#tools">Explore the suite</a>
+            <a class="btn btn-secondary" href="https://github.com/wadravi-talentiser/Talent-Lens" target="_blank" rel="noreferrer">Open repository</a>
+          </div>
+        </div>
 
+        <aside class="hero-card">
+          <div class="metric-grid">
+            <div class="metric">
+              <strong>4</strong>
+              <span>Core recruitment tools in a single suite</span>
+            </div>
+            <div class="metric">
+              <strong>30s</strong>
+              <span>Approximate brief-to-JD turnaround</span>
+            </div>
+            <div class="metric">
+              <strong>PDF / DOCX / TXT</strong>
+              <span>Document support across CV workflows</span>
+            </div>
+            <div class="metric">
+              <strong>GitHub Pages</strong>
+              <span>Simple static hosting for easy sharing</span>
+            </div>
+          </div>
+          <div class="publish-note">
+            <strong>Shareable URL</strong>
+            <p>
+              Once GitHub Pages is enabled for this repository, the public site URL is
+              <a href="https://wadravi-talentiser.github.io/Talent-Lens/" target="_blank" rel="noreferrer">https://wadravi-talentiser.github.io/Talent-Lens/</a>.
+            </p>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <section id="tools">
+      <div class="section-head">
+        <span>The Suite</span>
+        <h2>Tools built for real recruitment workflows</h2>
+        <p>
+          Each tool maps to an actual step in the hiring funnel, from converting rough client notes
+          into a structured JD all the way to tracking candidate movement through the pipeline.
+        </p>
+      </div>
+
+      <div class="tools-grid">
+        <article class="tool-card">
+          <div class="tool-top">
+            <div class="tool-pill">JD</div>
+            <div class="tag">Mandate Intake</div>
+          </div>
+          <h3>Client brief to structured job description</h3>
+          <p>
+            Turn emails, WhatsApp messages, and call notes into a polished JD with sourcing angles
+            and recruiter-ready talking points.
+          </p>
+          <ul>
+            <li>Structured JD in recruiter-friendly language</li>
+            <li>Must-have and good-to-have skill separation</li>
+            <li>Boolean strings plus sourcing keywords</li>
+            <li>Candidate persona, red flags, and call prompts</li>
+          </ul>
+        </article>
+
+        <article class="tool-card">
+          <div class="tool-top">
+            <div class="tool-pill">AI</div>
+            <div class="tag">Candidate Assessment</div>
+          </div>
+          <h3>Score a CV against a role in minutes</h3>
+          <p>
+            Upload the JD and candidate profile to generate a fit score, strengths, gaps,
+            risks, and tailored interview questions.
+          </p>
+          <ul>
+            <li>0-100 fit score with recruiter summary</li>
+            <li>Dimension-wise breakdown of alignment</li>
+            <li>Interview question generation</li>
+            <li>Compensation and notice-period guidance</li>
+          </ul>
+        </article>
+
+        <article class="tool-card">
+          <div class="tool-top">
+            <div class="tool-pill">MC</div>
+            <div class="tag">Comparison</div>
+          </div>
+          <h3>Rank multiple candidates against the same JD</h3>
+          <p>
+            Compare shortlisted profiles side by side, generate a live leaderboard,
+            and identify top candidates quickly for submission.
+          </p>
+          <ul>
+            <li>Leaderboard with top candidate indicators</li>
+            <li>Side-by-side score comparison</li>
+            <li>Detailed report view per candidate</li>
+            <li>Clear shortlist signal for recruiters</li>
+          </ul>
+        </article>
+
+        <article class="tool-card">
+          <div class="tool-top">
+            <div class="tool-pill">RT</div>
+            <div class="tag">Tracker</div>
+          </div>
+          <h3>Replace spreadsheet chaos with a pipeline tracker</h3>
+          <p>
+            Keep recruiter operations organized with searchable candidate records,
+            status updates, and spreadsheet export.
+          </p>
+          <ul>
+            <li>Core fields for source, client, role, contact, and status</li>
+            <li>Search and status filtering</li>
+            <li>Table and card views</li>
+            <li>Excel export for reporting and handoff</li>
+          </ul>
+        </article>
+      </div>
+    </section>
+
+    <section id="workflow">
+      <div class="section-head">
+        <span>Workflow</span>
+        <h2>One simple operating rhythm</h2>
+      </div>
+      <div class="section-card">
+        <div class="steps">
+          <div class="step">
+            <strong>Step 01</strong>
+            <h3>Capture the requirement</h3>
+            <p>Paste the raw client brief and let the tool structure the mandate clearly.</p>
+          </div>
+          <div class="step">
+            <strong>Step 02</strong>
+            <h3>Build the JD</h3>
+            <p>Generate the role summary, sourcing keywords, and recruiter messaging in one pass.</p>
+          </div>
+          <div class="step">
+            <strong>Step 03</strong>
+            <h3>Assess and compare</h3>
+            <p>Score candidates, rank shortlists, and identify who is ready for submission.</p>
+          </div>
+          <div class="step">
+            <strong>Step 04</strong>
+            <h3>Track progress</h3>
+            <p>Move candidates through the hiring pipeline with filters, notes, and exports.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="about">
+      <div class="section-head">
+        <span>About</span>
+        <h2>Built by recruiters for recruiters</h2>
+      </div>
+      <div class="about-grid">
+        <div class="section-card about-copy">
+          <p>
+            Talent-Lens was created by <strong>Wadravi Talentiser</strong> to reduce the manual work
+            around requirement intake, CV screening, shortlist comparison, and pipeline tracking.
+          </p>
+          <p>
+            The repository currently includes a polished static landing page plus the underlying React-based
+            tool source files. It is ready to be shared through GitHub Pages as a public project site.
+          </p>
+        </div>
+        <div class="section-card">
+          <div class="meta-list">
+            <div class="meta-item">
+              <span>Built By</span>
+              <strong>Wadravi Talentiser</strong>
+            </div>
+            <div class="meta-item">
+              <span>Hosting</span>
+              <strong>GitHub Pages</strong>
+            </div>
+            <div class="meta-item">
+              <span>Repository</span>
+              <a href="https://github.com/wadravi-talentiser/Talent-Lens" target="_blank" rel="noreferrer">github.com/wadravi-talentiser/Talent-Lens</a>
+            </div>
+            <div class="meta-item">
+              <span>Share Link</span>
+              <a href="https://wadravi-talentiser.github.io/Talent-Lens/" target="_blank" rel="noreferrer">wadravi-talentiser.github.io/Talent-Lens/</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="shell">
+    <div class="footer-row">
+      <div>Talent-Lens | AI Recruitment Suite by Wadravi Talentiser</div>
+      <div class="footer-links">
+        <a href="https://github.com/wadravi-talentiser/Talent-Lens" target="_blank" rel="noreferrer">GitHub</a>
+        <a href="https://github.com/wadravi-talentiser/Talent-Lens/issues" target="_blank" rel="noreferrer">Issues</a>
+        <a href="#about">About</a>
+      </div>
+    </div>
+  </footer>
 </body>
 </html>
