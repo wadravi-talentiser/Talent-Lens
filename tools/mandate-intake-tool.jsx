@@ -1,6 +1,6 @@
 const { useState } = React;
 
-const MODEL = "claude-sonnet-4-20250514";
+const MODEL = "gemini-2.0-flash";
 
 const C = {
   bg: "#0c0f1a",
@@ -67,18 +67,10 @@ Return this exact JSON structure:
   "urgency": "Low" | "Medium" | "High"
 }`;
 
-  const resp = await fetch("https://api.anthropic.com/v1/messages", {
-    method: "POST",
-    headers: window.TalentLensRuntime.getAnthropicHeaders(),
-    body: JSON.stringify({
-      model: MODEL,
-      max_tokens: 8000,
-      messages: [{ role: "user", content: prompt }]
-    })
+  return window.TalentLensRuntime.generateJson({
+    model: MODEL,
+    parts: [{ text: prompt }]
   });
-  const data = await resp.json();
-  const raw = data.content.map(b => b.text || "").join("");
-  return JSON.parse(raw.replace(/```json|```/g, "").trim());
 }
 
 // ── Chip ─────────────────────────────────────────────────────────────────

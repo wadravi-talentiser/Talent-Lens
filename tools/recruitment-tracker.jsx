@@ -2,7 +2,7 @@ const { useState, useMemo, useRef } = React;
 const XLSX = window.XLSX;
 const mammoth = window.mammoth;
 
-const MODEL = "claude-sonnet-4-20250514";
+const MODEL = "gemini-2.0-flash";
 
 const C = {
   bg: "#f7f5f0", card: "#ffffff", border: "#e8e2d9",
@@ -64,22 +64,14 @@ async function extractCVData(file) {
 async function aiExtractFromCV(cvData) {
   const content = [];
   if (cvData.type === "pdf") {
-    content.push({ type:"text", text:"Extract candidate information from this CV/Resume. Return ONLY valid JSON, no markdown:" });
-    content.push({ type:"document", source:{ type:"base64", media_type:"application/pdf", data: cvData.base64 } });
+    content.push({ text:"Extract candidate information from this CV/Resume. Return ONLY valid JSON, no markdown:" });
+    content.push({ inline_data:{ mime_type:"application/pdf", data: cvData.base64 } });
   } else {
-    content.push({ type:"text", text:`Extract candidate information from this CV/Resume text. Return ONLY valid JSON, no markdown:\n\n${cvData.content}` });
+    content.push({ text:`Extract candidate information from this CV/Resume text. Return ONLY valid JSON, no markdown:\n\n${cvData.content}` });
   }
-  content.push({ type:"text", text:`Return this exact JSON structure (use empty string if not found):
+  content.push({ text:`Return this exact JSON structure (use empty string if not found):
 {"name":"","currentCompany":"","jobTitle":"","skills":"comma separated skills","contact":"","email":"","city":"","salary":"current or expected CTC if mentioned","linkedin":"","experience":"total years as number only"}` });
-
-  const resp = await fetch("https://api.anthropic.com/v1/messages", {
-    method:"POST",
-    headers: window.TalentLensRuntime.getAnthropicHeaders(),
-    body: JSON.stringify({ model: MODEL, max_tokens:600, messages:[{ role:"user", content }] })
-  });
-  const data = await resp.json();
-  const raw = data.content.map(b => b.text||"").join("");
-  return JSON.parse(raw.replace(/```json|```/g,"").trim());
+  return window.TalentLensRuntime.generateJson({ model: MODEL, parts: content });
 }
 
 // ── Helpers ───────────────────────────────────────────────────────────────

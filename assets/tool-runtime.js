@@ -1,5 +1,5 @@
 (function () {
-  const KEY = "talentlens.anthropic_api_key";
+  const KEY = "talentlens.gemini_api_key";
 
   function readKey() {
     try {
@@ -21,17 +21,43 @@
     }
   }
 
-  function getAnthropicHeaders() {
+  function getApiKey() {
     const apiKey = readKey().trim();
     if (!apiKey) {
-      throw new Error("Add your Anthropic API key in the page header before running AI actions.");
+      throw new Error("Add your Gemini API key in the page header before running AI actions.");
+    }
+    return apiKey;
+  }
+
+  async function generateJson(options) {
+    const apiKey = getApiKey();
+    const model = options.model || "gemini-2.0-flash";
+    const response = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(apiKey)}`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          contents: [{ parts: options.parts }],
+          generationConfig: {
+            responseMimeType: "application/json"
+          }
+        })
+      }
+    );
+
+    const data = await response.json();
+    if (!response.ok || data.error) {
+      throw new Error(data.error?.message || "Gemini request failed.");
     }
 
-    return {
-      "Content-Type": "application/json",
-      "x-api-key": apiKey,
-      "anthropic-version": "2023-06-01"
-    };
+    const raw = (((data.candidates || [])[0] || {}).content || {}).parts || [];
+    const text = raw.map((part) => part.text || "").join("").trim();
+    if (!text) {
+      throw new Error("Gemini returned an empty response.");
+    }
+
+    return JSON.parse(text.replace(/```json|```/g, "").trim());
   }
 
   function renderApiKeyControls() {
@@ -42,11 +68,11 @@
     mount.innerHTML = `
       <div class="tl-key-card">
         <div>
-          <div class="tl-key-title">Anthropic API key</div>
-          <div class="tl-key-copy">Stored only in this browser via localStorage. Add your own key to use the AI-powered tools on GitHub Pages.</div>
+          <div class="tl-key-title">Gemini API key</div>
+          <div class="tl-key-copy">Stored only in this browser via localStorage. Add your own Gemini key to use the AI-powered tools on GitHub Pages.</div>
         </div>
         <div class="tl-key-form">
-          <input id="tl-api-key-input" type="password" placeholder="sk-ant-..." value="${current.replace(/"/g, "&quot;")}" />
+          <input id="tl-api-key-input" type="password" placeholder="AIza..." value="${current.replace(/"/g, "&quot;")}" />
           <button id="tl-save-key" type="button">Save key</button>
           <button id="tl-clear-key" type="button" class="ghost">Clear</button>
         </div>
@@ -84,7 +110,8 @@
   }
 
   window.TalentLensRuntime = {
-    getAnthropicHeaders: getAnthropicHeaders,
+    getApiKey: getApiKey,
+    generateJson: generateJson,
     readKey: readKey,
     saveKey: saveKey,
     renderApiKeyControls: renderApiKeyControls,

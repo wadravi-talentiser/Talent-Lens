@@ -1,7 +1,7 @@
 const { useState, useCallback } = React;
 const mammoth = window.mammoth;
 
-const MODEL = "claude-sonnet-4-20250514";
+const MODEL = "gemini-2.0-flash";
 
 const C = {
   bg: "#080d18", card: "#0f1623", card2: "#121b2e", border: "#1c2840",
@@ -41,29 +41,25 @@ function buildContent(jdData, cvData, notes) {
   const add = (label, d) => {
     if (!d) return;
     if (d.type === "pdf") {
-      parts.push({ type: "text", text: `--- ${label} (${d.name}) ---` });
-      parts.push({ type: "document", source: { type: "base64", media_type: "application/pdf", data: d.base64 } });
+      parts.push({ text: `--- ${label} (${d.name}) ---` });
+      parts.push({ inline_data: { mime_type: "application/pdf", data: d.base64 } });
     } else {
-      parts.push({ type: "text", text: `--- ${label} ---\n${d.content}` });
+      parts.push({ text: `--- ${label} ---\n${d.content}` });
     }
   };
   add("JOB DESCRIPTION", jdData);
   add("CANDIDATE CV", cvData);
-  if (notes) parts.push({ type: "text", text: `--- NOTES ---\n${notes}` });
-  parts.push({ type: "text", text: `You are a senior recruitment consultant. Analyse CV vs JD. Return ONLY valid JSON, no markdown, no preamble:
+  if (notes) parts.push({ text: `--- NOTES ---\n${notes}` });
+  parts.push({ text: `You are a senior recruitment consultant. Analyse CV vs JD. Return ONLY valid JSON, no markdown, no preamble:
 {"candidateName":"string","roleApplied":"string","overallScore":number,"fitVerdict":"Strong Fit"|"Good Fit"|"Partial Fit"|"Weak Fit","executiveSummary":"string","dimensions":[{"name":"Technical Skills","score":number,"comment":"string"},{"name":"Experience Level","score":number,"comment":"string"},{"name":"Industry Background","score":number,"comment":"string"},{"name":"Career Trajectory","score":number,"comment":"string"},{"name":"Education & Certs","score":number,"comment":"string"}],"strengths":["string","string","string"],"gaps":["string","string"],"redFlags":["string"],"interviewQuestions":["string","string","string","string","string"],"salaryRange":"string","noticePeriod":"string","recommendation":"string"}` });
   return parts;
 }
 
 async function assessCandidate(jdData, cvData, notes) {
-  const resp = await fetch("https://api.anthropic.com/v1/messages", {
-    method: "POST",
-    headers: window.TalentLensRuntime.getAnthropicHeaders(),
-    body: JSON.stringify({ model: MODEL, max_tokens: 8000, messages: [{ role: "user", content: buildContent(jdData, cvData, notes) }] })
+  return window.TalentLensRuntime.generateJson({
+    model: MODEL,
+    parts: buildContent(jdData, cvData, notes)
   });
-  const data = await resp.json();
-  const raw = data.content.map(b => b.text || "").join("");
-  return JSON.parse(raw.replace(/```json|```/g, "").trim());
 }
 
 // ── Helpers ──────────────────────────────────────────────────────────────

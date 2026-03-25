@@ -1,7 +1,7 @@
 const { useState, useCallback } = React;
 const mammoth = window.mammoth;
 
-const MODEL = "claude-sonnet-4-20250514";
+const MODEL = "gemini-2.0-flash";
 
 // ── File extraction ────────────────────────────────────────────────────────
 async function extractText(file) {
@@ -37,17 +37,17 @@ function buildMessages(jdData, cvData, notes) {
   const addDoc = (label, data) => {
     if (!data) return;
     if (data.type === "pdf") {
-      parts.push({ type: "text", text: `--- ${label} (${data.name}) ---` });
-      parts.push({ type: "document", source: { type: "base64", media_type: "application/pdf", data: data.base64 } });
+      parts.push({ text: `--- ${label} (${data.name}) ---` });
+      parts.push({ inline_data: { mime_type: "application/pdf", data: data.base64 } });
     } else {
-      parts.push({ type: "text", text: `--- ${label} ---\n${data.content}` });
+      parts.push({ text: `--- ${label} ---\n${data.content}` });
     }
   };
   addDoc("JOB DESCRIPTION", jdData);
   addDoc("CANDIDATE CV", cvData);
-  if (notes) parts.push({ type: "text", text: `--- NOTES ---\n${notes}` });
+  if (notes) parts.push({ text: `--- NOTES ---\n${notes}` });
   parts.push({
-    type: "text", text: `You are a senior recruitment consultant. Analyse the CV vs the JD. Return ONLY valid JSON (no markdown, no preamble):
+    text: `You are a senior recruitment consultant. Analyse the CV vs the JD. Return ONLY valid JSON (no markdown, no preamble):
 {
   "candidateName": "string",
   "roleApplied": "string",
@@ -339,7 +339,7 @@ function AddCandidatePanel({ jdData, jdText, inputMode, onAdded }) {
 
   const canRun = inputMode === "file" ? !!cvFile : !!cvText.trim();
 
-  async function assess() {
+async function assess() {
     setLoading(true); setErr(null);
     try {
       let cvData;
@@ -347,13 +347,7 @@ function AddCandidatePanel({ jdData, jdText, inputMode, onAdded }) {
       else cvData = { type: "text", content: cvText, name: "Candidate CV" };
 
       const content = buildMessages(jdData || { type: "text", content: jdText, name: "JD" }, cvData, notes);
-      const resp = await fetch("https://api.anthropic.com/v1/messages", {
-        method: "POST", headers: window.TalentLensRuntime.getAnthropicHeaders(),
-        body: JSON.stringify({ model: MODEL, max_tokens: 8000, messages: [{ role: "user", content }] })
-      });
-      const data = await resp.json();
-      const raw = data.content.map(b => b.text || "").join("");
-      const result = JSON.parse(raw.replace(/```json|```/g, "").trim());
+      const result = await window.TalentLensRuntime.generateJson({ model: MODEL, parts: content });
       onAdded(result);
       setCvFile(null); setCvText(""); setNotes("");
     } catch (e) { setErr("Failed: " + e.message); }

@@ -43,7 +43,7 @@ Track the pipeline with:
 |---|---|
 | Landing Page | Static HTML/CSS |
 | Tool Sources | React JSX |
-| AI Engine | Anthropic Claude API |
+| AI Engine | Google Gemini API |
 | File Parsing | mammoth.js, FileReader |
 | Export | SheetJS |
 | Hosting | GitHub Pages |
@@ -73,7 +73,7 @@ Live tool routes:
 - `/apps/comparison.html`
 - `/apps/recruitment-tracker.html`
 
-The AI-powered tools run fully in the browser on GitHub Pages, so users need to provide their own Anthropic API key locally in the page header.
+The AI-powered tools run fully in the browser on GitHub Pages, so users need to provide their own Gemini API key locally in the page header.
 
 ## License
 
