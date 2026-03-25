@@ -1,0 +1,17 @@
+# Talent-Lens Repository Settings
+# Apply these settings in your GitHub repo → Settings
+
+name: Talent-Lens
+description: "⚡ AI-powered recruitment automation suite — mandate intake, candidate assessment, pipeline tracker"
+website: https://wadravi-talentiser.github.io/Talent-Lens
+topics:
+  - recruitment
+  - ai
+  - claude-ai
+  - hr-tech
+  - candidate-assessment
+  - react
+  - recruitment-automation
+  - anthropic
+
+# GitHub Pages: Settings → Pages → Source: main branch → / (root)
