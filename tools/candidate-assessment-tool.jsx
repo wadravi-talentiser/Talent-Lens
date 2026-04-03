@@ -1,7 +1,7 @@
 const { useState, useCallback } = React;
 const mammoth = window.mammoth;
 
-const MODEL = "gemini-2.0-flash";
+const MODEL = "claude-sonnet-4-20250514";
 
 // ── File extraction ────────────────────────────────────────────────────────
 async function extractText(file) {
@@ -37,17 +37,17 @@ function buildMessages(jdData, cvData, notes) {
   const addDoc = (label, data) => {
     if (!data) return;
     if (data.type === "pdf") {
-      parts.push({ text: `--- ${label} (${data.name}) ---` });
-      parts.push({ inline_data: { mime_type: "application/pdf", data: data.base64 } });
+      parts.push({ type: "text", text: `--- ${label} (${data.name}) ---` });
+      parts.push({ type: "document", source: { type: "base64", media_type: "application/pdf", data: data.base64 } });
     } else {
-      parts.push({ text: `--- ${label} ---\n${data.content}` });
+      parts.push({ type: "text", text: `--- ${label} ---\n${data.content}` });
     }
   };
   addDoc("JOB DESCRIPTION", jdData);
   addDoc("CANDIDATE CV", cvData);
-  if (notes) parts.push({ text: `--- NOTES ---\n${notes}` });
+  if (notes) parts.push({ type: "text", text: `--- NOTES ---\n${notes}` });
   parts.push({
-    text: `You are a senior recruitment consultant. Analyse the CV vs the JD. Return ONLY valid JSON (no markdown, no preamble):
+    type: "text", text: `You are a senior recruitment consultant. Analyse the CV vs the JD. Return ONLY valid JSON (no markdown, no preamble):
 {
   "candidateName": "string",
   "roleApplied": "string",
@@ -347,7 +347,7 @@ async function assess() {
       else cvData = { type: "text", content: cvText, name: "Candidate CV" };
 
       const content = buildMessages(jdData || { type: "text", content: jdText, name: "JD" }, cvData, notes);
-      const result = await window.TalentLensRuntime.generateJson({ model: MODEL, parts: content });
+      const result = await window.TalentLensRuntime.generateJson({ model: MODEL, parts: content, maxTokens: 8000 });
       onAdded(result);
       setCvFile(null); setCvText(""); setNotes("");
     } catch (e) { setErr("Failed: " + e.message); }

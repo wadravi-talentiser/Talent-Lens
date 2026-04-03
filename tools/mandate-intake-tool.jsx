@@ -1,6 +1,6 @@
 const { useState } = React;
 
-const MODEL = "gemini-2.0-flash";
+const MODEL = "claude-sonnet-4-20250514";
 
 const C = {
   bg: "#0c0f1a",
